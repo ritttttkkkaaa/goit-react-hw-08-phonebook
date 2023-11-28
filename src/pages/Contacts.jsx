@@ -6,7 +6,7 @@ import { Container } from '../components/Container/Container';
 import { ContactForm } from '../components/ContactsForm/ContactsForm';
 import { Filter } from '../components/Filter/Filter';
 import { ContactList } from '../components/ContactList/ContactList';
-import { Modal } from 'components/Modal/Modal';
+import { Modal } from '../components/Modal/Modal';
 
 const Contacts = () => {
   const dispatch = useDispatch();
