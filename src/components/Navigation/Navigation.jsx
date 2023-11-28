@@ -7,7 +7,7 @@ const Navigation = () => {
   return (
     <>
       <NavLink to="/">
-        Phone<span>Book.</span>
+        PhoneBook
       </NavLink>
       <nav>
         {isLoggedIn && (
