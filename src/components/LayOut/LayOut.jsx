@@ -1,19 +1,16 @@
-import AppBar from '../AppBar/AppBar';
-import { Outlet } from 'react-router-dom';
 import { Suspense } from 'react';
-import { PiSpinnerGap } from 'react-icons/pi';
+import { Outlet } from 'react-router-dom';
+import AppBar from '../AppBar/AppBar';
 
-const LayOut = () => {
+const Layout = () => {
   return (
     <>
       <AppBar />
-      <Suspense
-        fallback={<PiSpinnerGap size={50} className="spinner main-spinner" />}
-      >
+      <Suspense fallback={null}>
         <Outlet />
       </Suspense>
     </>
   );
 };
 
-export default LayOut;
+export default Layout;

@@ -1,41 +1,52 @@
-import { Routes, Route } from 'react-router-dom';
-import Home from 'pages/Home';
-import LayOut from './LayOut/LayOut';
-import { useDispatch, useSelector } from 'react-redux';
-import operations from 'redux/auth/operations';
-import { useEffect, lazy } from 'react';
-import PrivateRoute from './Routes/PrivatRoute';
-import PublicRoute from './Routes/PublicRoute';
-import { getIsLoadingAuthUser } from 'redux/auth/selectors';
+import { lazy, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
+import { useAuth } from 'hooks/useAuth';
+import { refreshUser } from 'redux/auth/operations';
+import Layout from './Layout/Layout'
+import PrivateRoute from './PrivateRoute/PrivateRoute';
+import RestrictedRoute from './RestrictedRoute/RestrictedRoute';
 
-const Contacts = lazy(() => import('../pages/Contacts'));
-const Registration = lazy(() => import('../pages/Registration'));
-const Login = lazy(() => import('../pages/Login'));
+const HomePage = lazy(() => import('../pages/Home'));
+const RegisterPage = lazy(() => import('../pages/Registration'));
+const LoginPage = lazy(() => import('../pages/Login'));
+const ContactsPage = lazy(() => import('../pages/Contacts'));
 
 export const App = () => {
   const dispatch = useDispatch();
-  const isLoadingAuthUser = useSelector(getIsLoadingAuthUser);
+  const { isRefreshing } = useAuth();
 
   useEffect(() => {
-    dispatch(operations.fetchCurrentUser());
+    dispatch(refreshUser());
   }, [dispatch]);
 
-  return (
-    !isLoadingAuthUser && (
-      <Routes>
-        <Route path="/" element={<LayOut />}>
-          <Route index element={<Home />} />
-          <Route
-            path="contacts"
-            element={<PrivateRoute component={Contacts} />}
-          />
-          <Route
-            path="register"
-            element={<PublicRoute component={Registration} />}
-          />
-          <Route path="login" element={<PublicRoute component={Login} />} />
-        </Route>
-      </Routes>
-    )
+  return isRefreshing ? (
+    <b>Refreshing user</b>
+  ) : (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<HomePage />} />
+
+        <Route
+          path="/register"
+          element={
+            <RestrictedRoute redirectTo="/login" component={<RegisterPage />} />
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />
+          }
+        />
+        <Route
+          path="/contacts"
+          element={
+            <PrivateRoute redirectTo="/login" component={<ContactsPage />} />
+          }
+        />
+        <Route path="*" element={<HomePage />} />
+      </Route>
+    </Routes>
   );
 };

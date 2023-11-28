@@ -1,14 +1,7 @@
-import Container from 'components/Container/Container';
-import LogForm from 'components/LogForm/LogForm';
-import { LogRegStyles } from './styles/LogRegStyles';
+import LoginForm from '../components/LogForm/LogForm';
+
 const Login = () => {
-  return (
-    <LogRegStyles>
-      <Container>
-        <LogForm />
-      </Container>
-    </LogRegStyles>
-  );
+  return <LoginForm />;
 };
 
 export default Login;

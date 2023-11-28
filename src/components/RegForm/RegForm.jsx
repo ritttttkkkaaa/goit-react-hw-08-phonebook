@@ -1,104 +1,66 @@
-import { useState } from 'react';
-import operations from 'redux/auth/operations';
 import { useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { register } from '../../redux/auth/operations';
+import { Notify } from 'notiflix';
+import { NavLink } from 'react-router-dom';
 
-import { RegFormStyles } from './RegFormStyles.styled';
-
-const RegForm = () => {
+const RegisterForm = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   const handleSubmit = e => {
     e.preventDefault();
     const form = e.currentTarget;
+
     dispatch(
-      operations.register({
+      register({
         name: form.elements.name.value,
         email: form.elements.email.value,
         password: form.elements.password.value,
       })
-    );
+    )
+      .unwrap()
+      .then(originalPromiseResult => {
+        Notify.success(`${originalPromiseResult.user.name} welcome!`);
+      })
+      .catch(() => {
+        Notify.failure("Sorry, something's wrong");
+      });
+
     form.reset();
   };
-  const handleChange = ({ target }) => {
-    if (isLoginPage) {
-      if (target.name === 'email') {
-        setEmail(target.value);
-      } else if (target.name === 'password') {
-        setPassword(target.value);
-      }
-    } else {
-      if (target.name === 'name') {
-        setName(target.value);
-      } else if (target.name === 'email') {
-        setEmail(target.value);
-      } else if (target.name === 'password') {
-        setPassword(target.value);
-      }
-    }
-  };
+
   return (
-    <>
-      <h2
-        style={{
-          textAlign: 'center',
-          marginTop: '80px',
-        }}
-      >
-        Registration page
-      </h2>
-      <RegFormStyles autoComplete="off" onSubmit={handleSubmit}>
-        <div className="label-container">
-          <input
-            placeholder="Name"
-            id="name"
-            type="text"
-            name="name"
-            onChange={handleChange}
-            value={name}
-          />
-          <label htmlFor="name">Name</label>
-        </div>
-        <div className="label-container">
-          <input
-            placeholder="Email"
-            id="email"
-            type="email"
-            name="email"
-            onChange={handleChange}
-            value={email}
-          />
-          <label htmlFor="email">Email</label>
-        </div>
-        <div className="label-container">
-          <input
-            placeholder="Password"
-            id="password"
-            type="password"
-            name="password"
-            onChange={handleChange}
-            value={password}
-          />
-          <label htmlFor="password">Password</label>
-        </div>
-        <button
-          disabled={
-            isLoginPage
-              ? !(!!email && password.length >= 7)
-              : !(!!name && !!email && password.length >= 7)
-          }
-          type="submit"
-        >
-          Registration
-        </button>
-      </RegFormStyles>
-    </>
+    <form onSubmit={handleSubmit} autoComplete="off">
+      <label>
+        Name
+        <input
+          type="text"
+          name="name"
+          placeholder="Enter name ..."
+          required
+        />
+      </label>
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter email ..."
+          required
+        />
+      </label>
+      <label>
+        Password
+        <input
+          type="password"
+          name='password'
+          placeholder="Enter password ..."
+          required
+        />
+      </label>
+      <button type="submit">Register</button>
+      <NavLink to="/login">Have acount? LogIn</NavLink>
+    </form>
   );
 };
 
-export default RegForm;
+export default RegisterForm;

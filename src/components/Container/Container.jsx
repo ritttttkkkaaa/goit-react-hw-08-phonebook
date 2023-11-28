@@ -1,7 +1,8 @@
-import { ContainerStyles } from './ContainerStyles.styled';
-
-const Container = ({ children }) => {
-  return <ContainerStyles className="container">{children}</ContainerStyles>;
+export const Container = ({ title, children }) => {
+  return (
+    <section>
+      {title && <h2>{title}</h2>}
+      {children}
+    </section>
+  );
 };
-
-export default Container;

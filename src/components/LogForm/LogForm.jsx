@@ -1,48 +1,59 @@
-import operations from 'redux/auth/operations';
+import { Notify } from 'notiflix';
 import { useDispatch } from 'react-redux';
-import { RegFormStyles } from 'components/RegForm/RegFormStyles.styled';
+import { logIn } from '../../redux/auth/operations';
+import { NavLink } from 'react-router-dom';
 
-const LogForm = () => {
+const LoginForm = () => {
   const dispatch = useDispatch();
+
   const handleSubmit = e => {
     e.preventDefault();
+
     const form = e.currentTarget;
     dispatch(
-      operations.logIn({
+      logIn({
         email: form.elements.email.value,
         password: form.elements.password.value,
       })
-    );
+    )
+      .unwrap()
+      .then(originalPromiseResult => {
+        Notify.success(`${originalPromiseResult.user.name} welcome back!`);
+      })
+      .catch(() => {
+        Notify.failure('Incorrect login or password');
+      });
+
+    form.reset();
   };
+
   return (
-    <>
-      <h2>Login page</h2>
-      <RegFormStyles autoComplete="off" onSubmit={handleSubmit}>
-        <div className="label-container">
-          <input
-            placeholder="Email"
-            id="email"
-            type="email"
-            name="email"
-            // onChange={handleChange}
-            // value={email}
-          />
-          <label htmlFor="email">Email</label>
-        </div>
-        <div className="label-container">
-          <input
-            placeholder="Password"
-            id="password"
-            type="password"
-            name="password"
-            // onChange={handleChange}
-            // value={password}
-          />
-          <label htmlFor="password">Password</label>
-        </div>
-        <button type="submit">Log In</button>
-      </RegFormStyles>
-    </>
+    <form onSubmit={handleSubmit} autoComplete="off">
+      <label>
+        Email
+        <input
+          type="email"
+          name="email"
+          pattern="/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/."
+          title="Email may contain letters, numbers, an apostrophe, and must be followed by '@' domain name '.' domain suffix. For example Taras@ukr.ua, adrian@gmail.com, JacobM3rcer@hotmail.com"
+          required
+          placeholder="Enter email ..."
+        />
+      </label>
+      <label>
+        Password
+        <input
+          type="password"
+          name="password"
+          pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+          title="Password must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters. For example TgeV23592, 3Greioct."
+          required
+          placeholder="Enter password ..."
+        />
+      </label>
+      <button type="submit">LogIn</button>
+      <NavLink to="/register">Don`t have acount? Register</NavLink>
+    </form>
   );
 };
-export default LogForm;
+export default LoginForm;
